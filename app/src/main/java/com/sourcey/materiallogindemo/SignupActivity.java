@@ -14,7 +14,7 @@ import android.widget.Toast;
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
-public class SignupActivity extends AppCompatActivity {
+public class SignupActivity extends AppCompatActivity implements AsyncResponse {
     private static final String TAG = "SignupActivity";
 
     @Bind(R.id.input_name) EditText _nameText;
@@ -25,7 +25,9 @@ public class SignupActivity extends AppCompatActivity {
     @Bind(R.id.input_reEnterPassword) EditText _reEnterPasswordText;
     @Bind(R.id.btn_signup) Button _signupButton;
     @Bind(R.id.link_login) TextView _loginLink;
-    
+
+    BackgroundTask backgroundTask = new BackgroundTask();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +51,7 @@ public class SignupActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
+        backgroundTask.delegate = this;
     }
 
     public void signup() {
@@ -67,38 +70,57 @@ public class SignupActivity extends AppCompatActivity {
         progressDialog.setMessage("Creating Account...");
         progressDialog.show();
 
-        String name = _nameText.getText().toString();
-        String address = _addressText.getText().toString();
-        String email = _emailText.getText().toString();
-        String mobile = _mobileText.getText().toString();
-        String password = _passwordText.getText().toString();
-        String reEnterPassword = _reEnterPasswordText.getText().toString();
-
-        // TODO: Implement your own signup logic here.
-
         new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        // On complete call either onSignupSuccess or onSignupFailed
-                        // depending on success
-                        onSignupSuccess();
-                        // onSignupFailed();
-                        progressDialog.dismiss();
+            new Runnable() {
+                public void run() {
+                    String method = "signup";
+
+                    String name = _nameText.getText().toString();
+                    String address = _addressText.getText().toString();
+                    String email = _emailText.getText().toString();
+                    String phone = _mobileText.getText().toString();
+                    String password = _passwordText.getText().toString();
+                    String reEnterPassword = _reEnterPasswordText.getText().toString();
+                    //BackgroundTask backgroundTask = new BackgroundTask(getApplicationContext());
+                    if (!password.equals(reEnterPassword)) {
+                        onSignupFailed();
+                        return;
                     }
-                }, 3000);
+
+                    backgroundTask.setContext(getApplicationContext());
+                    backgroundTask.execute(method, name, password, email, phone, address);
+                    // On complete call either onLoginSuccess or onLoginFailed
+                    progressDialog.dismiss();
+                }
+            }, 3000);
     }
 
+    @Override
+    public void processFinish(String output){
+        //Here you will receive the result fired from async class
+        //of onPostExecute(result) method.
+        System.out.println(output);
+        if (output == null || output.equals("0")) {
+            onSignupFailed();
+        } else {
+            onSignupSuccess();
+        }
+    }
 
     public void onSignupSuccess() {
         _signupButton.setEnabled(true);
         setResult(RESULT_OK, null);
-        finish();
+
+        Intent startIntent = new Intent(getApplicationContext(), LoginActivity.class);
+        startActivity(startIntent);
     }
 
     public void onSignupFailed() {
         Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
 
         _signupButton.setEnabled(true);
+        Intent startIntent = new Intent(getApplicationContext(), SignupActivity.class);
+        startActivity(startIntent);
     }
 
     public boolean validate() {

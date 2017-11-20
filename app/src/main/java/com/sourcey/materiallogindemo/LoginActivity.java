@@ -12,18 +12,30 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements AsyncResponse {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
+
 
     @Bind(R.id.input_email) EditText _emailText;
     @Bind(R.id.input_password) EditText _passwordText;
     @Bind(R.id.btn_login) Button _loginButton;
     @Bind(R.id.link_signup) TextView _signupLink;
-    
+
+    BackgroundTask backgroundTask = new BackgroundTask();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +61,7 @@ public class LoginActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
+        backgroundTask.delegate = this;
     }
 
     public void login() {
@@ -67,20 +80,39 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
 
-        String email = _emailText.getText().toString();
-        String password = _passwordText.getText().toString();
-
         // TODO: Implement your own authentication logic here.
 
         new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        // On complete call either onLoginSuccess or onLoginFailed
-                        onLoginSuccess();
-                        // onLoginFailed();
-                        progressDialog.dismiss();
-                    }
-                }, 3000);
+            new Runnable() {
+                public void run() {
+                    String userEmail = _emailText.getText().toString();
+                    String userPassword = _passwordText.getText().toString();
+
+                    String method = "login";
+
+                    //BackgroundTask backgroundTask = new BackgroundTask(getApplicationContext());
+                    backgroundTask.setContext(getApplicationContext());
+                    backgroundTask.execute(method, userEmail, userPassword);
+                    // On complete call either onLoginSuccess or onLoginFailed
+                    progressDialog.dismiss();
+                }
+            }, 3000);
+    }
+
+    @Override
+    public void processFinish(String output){
+        //Here you will receive the result fired from async class
+        //of onPostExecute(result) method.
+        System.out.println(output);
+        if (output == null || !output.equals("1")) {
+            onLoginFailed();
+            Intent startIntent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(startIntent);
+        } else {
+            onLoginSuccess();
+            Intent startIntent = new Intent(getApplicationContext(), SecondActivity.class);
+            startActivity(startIntent);
+        }
     }
 
 
