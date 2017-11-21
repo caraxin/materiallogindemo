@@ -9,12 +9,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class SecondActivity extends AppCompatActivity {
 
     Button btnGetLoc;
     TextView textViewDisplayCoordinates;
+    TextView textViewURL;
+    TextView textViewCurrentLandmark;
     String deviceID = UUID.randomUUID().toString();
 
     @Override
@@ -42,12 +45,31 @@ public class SecondActivity extends AppCompatActivity {
                     SendCoordinates sendCoordinates = new SendCoordinates(getApplicationContext());
                     sendCoordinates.execute(deviceID, latString, lonString);
 
+                    textViewURL = (TextView) findViewById(R.id.textViewURL);
+                    textViewCurrentLandmark =  findViewById(R.id.textViewCurrentLandmark);
+
                     //Toast.makeText(getApplicationContext(), "LAT: " + latString + "\nLONG: " + lonString, Toast.LENGTH_LONG).show();
                 }
                 else {
                     textViewDisplayCoordinates.setText("geo is null");
                 }
+
+                CheckDistance checkDistance = new CheckDistance(getApplicationContext(), new CheckDistInterface() {
+                    @Override
+                    public void returnString(ArrayList<String> result) {
+
+                        String currentLandmark = result.get(0);
+                        String usefulURL = result.get(1);
+
+                        textViewCurrentLandmark.setText(currentLandmark);
+                        textViewURL.setText(usefulURL);
+                    }
+                });
+
+                checkDistance.execute(deviceID, l);
             }
         });
+
+
     }
 }
