@@ -25,7 +25,7 @@ public class LearnAboutLocationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_second);
+        setContentView(R.layout.activity_learn_about_location);
 
         //grab device ID
         if(getIntent().hasExtra("org.materiallogindemo.DEVICEID")){
