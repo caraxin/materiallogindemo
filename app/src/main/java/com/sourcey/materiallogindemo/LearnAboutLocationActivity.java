@@ -10,24 +10,34 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
-public class SecondActivity extends AppCompatActivity {
+public class LearnAboutLocationActivity extends AppCompatActivity {
 
     Button btnGetLoc;
     TextView textViewDisplayCoordinates;
+    String deviceID;
+
+    //new fields
+
     TextView textViewURL;
     TextView textViewCurrentLandmark;
-    String deviceID = UUID.randomUUID().toString();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
 
+        //grab device ID
+        if(getIntent().hasExtra("org.materiallogindemo.DEVICEID")){
+            deviceID = getIntent().getExtras().getString("org.materiallogindemo.DEVICEID");
+        }
+        else
+            deviceID = null;
+
         btnGetLoc = (Button) findViewById(R.id.btnGetLoc);
         textViewDisplayCoordinates = (TextView) findViewById(R.id.textViewDisplayCoordinates);
-        ActivityCompat.requestPermissions(SecondActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 123);
+        ActivityCompat.requestPermissions(LearnAboutLocationActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 123);
+
         btnGetLoc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -36,7 +46,7 @@ public class SecondActivity extends AppCompatActivity {
                 if(l != null){
                     double lat = l.getLatitude();
                     double lon = l.getLongitude();
-                    System.out.println("Second Activity!: " + lat + ", " + lon);
+                    System.out.println("Learn about Location Activity!: " + lat + ", " + lon);
                     textViewDisplayCoordinates.setText("You are currently at: " + lat + ", " + lon);
 
                     String latString = String.valueOf(lat);
