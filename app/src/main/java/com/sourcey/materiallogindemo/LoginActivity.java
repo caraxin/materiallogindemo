@@ -110,6 +110,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
             startActivity(startIntent);
         } else {
             onLoginSuccess();
+            //new intermediate Menu Activity
             Intent startIntent = new Intent(getApplicationContext(), MenuActivity.class);
             startActivity(startIntent);
         }
