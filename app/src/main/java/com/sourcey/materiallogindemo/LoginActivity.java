@@ -111,7 +111,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
         } else {
             onLoginSuccess();
             //new intermediate Menu Activity
-            //SecondActivity has now been renamed
+            //SecondActivity has now been renamed to 'LearnAboutLocationActivity'
             Intent startIntent = new Intent(getApplicationContext(), MenuActivity.class);
             startActivity(startIntent);
         }
