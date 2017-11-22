@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-        
+
         _loginButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -83,20 +83,20 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
         // TODO: Implement your own authentication logic here.
 
         new android.os.Handler().postDelayed(
-            new Runnable() {
-                public void run() {
-                    String userEmail = _emailText.getText().toString();
-                    String userPassword = _passwordText.getText().toString();
+                new Runnable() {
+                    public void run() {
+                        String userEmail = _emailText.getText().toString();
+                        String userPassword = _passwordText.getText().toString();
 
-                    String method = "login";
+                        String method = "login";
 
-                    //BackgroundTask backgroundTask = new BackgroundTask(getApplicationContext());
-                    backgroundTask.setContext(getApplicationContext());
-                    backgroundTask.execute(method, userEmail, userPassword);
-                    // On complete call either onLoginSuccess or onLoginFailed
-                    progressDialog.dismiss();
-                }
-            }, 3000);
+                        //BackgroundTask backgroundTask = new BackgroundTask(getApplicationContext());
+                        backgroundTask.setContext(getApplicationContext());
+                        backgroundTask.execute(method, userEmail, userPassword);
+                        // On complete call either onLoginSuccess or onLoginFailed
+                        progressDialog.dismiss();
+                    }
+                }, 3000);
     }
 
     @Override
@@ -110,7 +110,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
             startActivity(startIntent);
         } else {
             onLoginSuccess();
-            Intent startIntent = new Intent(getApplicationContext(), SecondActivity.class);
+            Intent startIntent = new Intent(getApplicationContext(), MenuActivity.class);
             startActivity(startIntent);
         }
     }
