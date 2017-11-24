@@ -2,6 +2,7 @@ package com.sourcey.materiallogindemo;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -12,6 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedWriter;
@@ -24,17 +26,16 @@ import java.net.URL;
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
-public class LoginActivity extends AppCompatActivity implements AsyncResponse {
+public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
+    private static final String login_url = "http://10.0.2.2:8006/BruinsInfo/Login";
 
 
     @Bind(R.id.input_email) EditText _emailText;
     @Bind(R.id.input_password) EditText _passwordText;
     @Bind(R.id.btn_login) Button _loginButton;
     @Bind(R.id.link_signup) TextView _signupLink;
-
-    BackgroundTask backgroundTask = new BackgroundTask();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,6 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
-        backgroundTask.delegate = this;
     }
 
     public void login() {
@@ -82,41 +82,45 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
 
         // TODO: Implement your own authentication logic here.
 
-        new android.os.Handler().postDelayed(
+        boolean b = new Handler().postDelayed(
                 new Runnable() {
                     public void run() {
-                        String userEmail = _emailText.getText().toString();
-                        String userPassword = _passwordText.getText().toString();
+                        BackgroundTask backgroundTask = new BackgroundTask(getApplicationContext(), new ProcessResult() {
+                            @Override
+                            public void returnString(String result) {
+                                System.out.println(result);
+                                if (result == null || !result.equals("1")) {
+                                    onLoginFailed();
+                                    Intent startIntent = new Intent(getApplicationContext(), LoginActivity.class);
+                                    startActivity(startIntent);
+                                } else {
+                                    onLoginSuccess();
+                                    //new intermediate Menu Activity
+                                    //SecondActivity has now been renamed to 'LearnAboutLocationActivity'
+                                    Intent startIntent = new Intent(getApplicationContext(), MenuActivity.class);
+                                    startActivity(startIntent);
+                                }
+                            }
+                        });
 
-                        String method = "login";
+                        String user_email = _emailText.getText().toString();
+                        String user_password = _passwordText.getText().toString();
+                        JSONObject jsonParam = new JSONObject();
+                        try {
+                            jsonParam.put("user_email", user_email);
+                            jsonParam.put("user_password", user_password);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        String param = jsonParam.toString();
 
                         //BackgroundTask backgroundTask = new BackgroundTask(getApplicationContext());
-                        backgroundTask.setContext(getApplicationContext());
-                        backgroundTask.execute(method, userEmail, userPassword);
+                        backgroundTask.execute(login_url, param);
                         // On complete call either onLoginSuccess or onLoginFailed
                         progressDialog.dismiss();
                     }
                 }, 3000);
     }
-
-    @Override
-    public void processFinish(String output){
-        //Here you will receive the result fired from async class
-        //of onPostExecute(result) method.
-        System.out.println(output);
-        if (output == null || !output.equals("1")) {
-            onLoginFailed();
-            Intent startIntent = new Intent(getApplicationContext(), LoginActivity.class);
-            startActivity(startIntent);
-        } else {
-            onLoginSuccess();
-            //new intermediate Menu Activity
-            //SecondActivity has now been renamed to 'LearnAboutLocationActivity'
-            Intent startIntent = new Intent(getApplicationContext(), MenuActivity.class);
-            startActivity(startIntent);
-        }
-    }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -25,7 +25,8 @@
         <activity
             android:name=".SignupActivity"
             android:theme="@style/AppTheme.Dark" />
-        <activity android:name=".SecondActivity"></activity>
+        <activity android:name=".MenuActivity"></activity>
+        <activity android:name=".LearnAboutLocationActivity"></activity>
     </application>
 
 </manifest>

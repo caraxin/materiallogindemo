@@ -33,8 +33,6 @@ public class CountUsers extends AsyncTask<String,Void,ArrayList<String>> {
         context = con;
     }
 
-    public AsyncResponse delegate = null;
-
     @Override
     protected void onPreExecute() {
         super.onPreExecute();

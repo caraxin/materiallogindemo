@@ -11,11 +11,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
-public class SignupActivity extends AppCompatActivity implements AsyncResponse {
+public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "SignupActivity";
+    private static final String signup_url = "http://10.0.2.2:8006/BruinsInfo/Signup";
 
     @Bind(R.id.input_name) EditText _nameText;
     @Bind(R.id.input_address) EditText _addressText;
@@ -26,7 +30,6 @@ public class SignupActivity extends AppCompatActivity implements AsyncResponse {
     @Bind(R.id.btn_signup) Button _signupButton;
     @Bind(R.id.link_login) TextView _loginLink;
 
-    BackgroundTask backgroundTask = new BackgroundTask();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,7 +54,6 @@ public class SignupActivity extends AppCompatActivity implements AsyncResponse {
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
-        backgroundTask.delegate = this;
     }
 
     public void signup() {
@@ -73,38 +75,48 @@ public class SignupActivity extends AppCompatActivity implements AsyncResponse {
         new android.os.Handler().postDelayed(
             new Runnable() {
                 public void run() {
-                    String method = "signup";
+                    BackgroundTask backgroundTask = new BackgroundTask(getApplicationContext(), new ProcessResult() {
+                        @Override
+                        public void returnString(String result) {
+                            System.out.println(result);
+                            if (result == null || result.equals("0")) {
+                                onSignupFailed();
+                            } else {
+                                onSignupSuccess();
+                            }
+                        }
+                    });
 
-                    String name = _nameText.getText().toString();
-                    String address = _addressText.getText().toString();
-                    String email = _emailText.getText().toString();
-                    String phone = _mobileText.getText().toString();
-                    String password = _passwordText.getText().toString();
+                    String user_name = _nameText.getText().toString();
+                    String user_address = _addressText.getText().toString();
+                    String user_email = _emailText.getText().toString();
+                    String user_phone = _mobileText.getText().toString();
+                    String user_pass = _passwordText.getText().toString();
                     String reEnterPassword = _reEnterPasswordText.getText().toString();
                     //BackgroundTask backgroundTask = new BackgroundTask(getApplicationContext());
-                    if (!password.equals(reEnterPassword)) {
+                    if (!user_pass.equals(reEnterPassword)) {
                         onSignupFailed();
                         return;
                     }
+                    JSONObject jsonParam = new JSONObject();
+                    try {
+                        jsonParam.put("user_name", user_name);
+                        jsonParam.put("user_pass", user_pass);
+                        jsonParam.put("user_email", user_email);
+                        jsonParam.put("user_phone", user_phone);
+                        jsonParam.put("user_address", user_address);
 
-                    backgroundTask.setContext(getApplicationContext());
-                    backgroundTask.execute(method, name, password, email, phone, address);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    String param = jsonParam.toString();
+
+                    //BackgroundTask backgroundTask = new BackgroundTask(getApplicationContext());
+                    backgroundTask.execute(signup_url, param);
                     // On complete call either onLoginSuccess or onLoginFailed
                     progressDialog.dismiss();
                 }
             }, 3000);
-    }
-
-    @Override
-    public void processFinish(String output){
-        //Here you will receive the result fired from async class
-        //of onPostExecute(result) method.
-        System.out.println(output);
-        if (output == null || output.equals("0")) {
-            onSignupFailed();
-        } else {
-            onSignupSuccess();
-        }
     }
 
     public void onSignupSuccess() {

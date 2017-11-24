@@ -9,9 +9,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class LearnAboutLocationActivity extends AppCompatActivity {
+    private static final String geoinfo_url = "http://10.0.2.2:8006/BruinsInfo/GeoInfo";
 
     Button btnGetLoc;
     TextView textViewDisplayCoordinates;
@@ -34,6 +38,8 @@ public class LearnAboutLocationActivity extends AppCompatActivity {
         else
             deviceID = null;
 
+        textViewURL = (TextView) findViewById(R.id.textViewURL);
+        textViewCurrentLandmark =  findViewById(R.id.textViewCurrentLandmark);
         btnGetLoc = (Button) findViewById(R.id.btnGetLoc);
         textViewDisplayCoordinates = (TextView) findViewById(R.id.textViewDisplayCoordinates);
         ActivityCompat.requestPermissions(LearnAboutLocationActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 123);
@@ -43,40 +49,49 @@ public class LearnAboutLocationActivity extends AppCompatActivity {
             public void onClick(View v) {
                 GPStracker g = new GPStracker(getApplicationContext());
                 Location l = g.getLocation();
+                double user_latitude, user_longitude;
                 if(l != null){
-                    double lat = l.getLatitude();
-                    double lon = l.getLongitude();
-                    System.out.println("Learn about Location Activity!: " + lat + ", " + lon);
-                    textViewDisplayCoordinates.setText("You are currently at: " + lat + ", " + lon);
-
-                    String latString = String.valueOf(lat);
-                    String lonString = String.valueOf(lon);
-
-                    SendCoordinates sendCoordinates = new SendCoordinates(getApplicationContext());
-                    sendCoordinates.execute(deviceID, latString, lonString);
-
-                    textViewURL = (TextView) findViewById(R.id.textViewURL);
-                    textViewCurrentLandmark =  findViewById(R.id.textViewCurrentLandmark);
-
-                    //Toast.makeText(getApplicationContext(), "LAT: " + latString + "\nLONG: " + lonString, Toast.LENGTH_LONG).show();
+                    user_latitude = l.getLatitude();
+                    user_longitude = l.getLongitude();
+                    System.out.println("Learn about Location Activity!: " + user_latitude + ", " + user_longitude);
+                    textViewDisplayCoordinates.setText("You are currently at: " + user_latitude + ", " + user_longitude);
                 }
                 else {
-                    textViewDisplayCoordinates.setText("geo is null");
+                    user_latitude = 34.0716;
+                    user_longitude = -118.4422;
+                    textViewDisplayCoordinates.setText("geo is null, the default location is: 34.0716, -118.4422, for testing");
                 }
 
-                CheckDistance checkDistance = new CheckDistance(getApplicationContext(), new CheckDistInterface() {
+                BackgroundTask task = new BackgroundTask(getApplicationContext(), new ProcessResult() {
                     @Override
-                    public void returnString(ArrayList<String> result) {
+                    public void returnString(String result) {
+                        try {
+                            JSONObject obj = new JSONObject(result);
+                            String name = obj.getString("name");
+                            double latitude = obj.getDouble("latitude");
+                            double longitude = obj.getDouble("longitude");
+                            String url = obj.getString("url");
+                            double distance = obj.getDouble("distance");
 
-                        String currentLandmark = result.get(0);
-                        String usefulURL = result.get(1);
+                            textViewCurrentLandmark.setText(name);
+                            textViewURL.setText(url);
+                            System.out.println("distance = " + distance);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
 
-                        textViewCurrentLandmark.setText(currentLandmark);
-                        textViewURL.setText(usefulURL);
                     }
                 });
 
-                checkDistance.execute(deviceID, l);
+                JSONObject jsonParam = new JSONObject();
+                try {
+                    jsonParam.put("latitude", user_latitude);
+                    jsonParam.put("longitude", user_longitude);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                String param = jsonParam.toString();
+                task.execute(geoinfo_url, param);
             }
         });
 
