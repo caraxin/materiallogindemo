@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="google_maps_key">AIzaSyBa5MYIN0TLws7ETg73zee1UB8FdYwmGUA</string>
+    <integer name="google_play_services_version">11717000</integer>
+</resources>

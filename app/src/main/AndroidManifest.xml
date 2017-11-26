@@ -10,6 +10,15 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name">
@@ -25,8 +34,11 @@
         <activity
             android:name=".SignupActivity"
             android:theme="@style/AppTheme.Dark" />
-        <activity android:name=".MenuActivity"></activity>
+        <activity android:name=".MenuActivity"
+            android:theme="@style/AppTheme.Dark" />
         <activity android:name=".LearnAboutLocationActivity"></activity>
+        <activity android:name=".AboutMeActivity"
+            android:theme="@style/AppTheme.Dark" />
     </application>
 
 </manifest>

@@ -4,16 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sourcey.materiallogindemo.FindFriendsActivity">
+    tools:context="com.sourcey.materiallogindemo.AboutMeActivity">
 
     <TextView
-        android:id="@+id/textViewUsers"
+        android:id="@+id/textViewInfo"
         android:layout_width="285dp"
         android:layout_height="50dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:text="The following users are active on BruinsInfo:"
+        android:text="My Info:"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.506"
@@ -21,28 +21,15 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
-        android:id="@+id/listViewUsers"
+        android:id="@+id/listInfo"
         android:layout_width="323dp"
         android:layout_height="315dp"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:scrollbars="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/btnRefreshUserList"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewUsers" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewInfo" />
 
-    <Button
-        android:id="@+id/btnRefreshUserList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="36dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:text="Refresh"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 </android.support.constraint.ConstraintLayout>

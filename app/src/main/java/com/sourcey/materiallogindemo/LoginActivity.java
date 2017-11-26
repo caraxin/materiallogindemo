@@ -98,6 +98,7 @@ public class LoginActivity extends AppCompatActivity {
                                     //new intermediate Menu Activity
                                     //SecondActivity has now been renamed to 'LearnAboutLocationActivity'
                                     Intent startIntent = new Intent(getApplicationContext(), MenuActivity.class);
+                                    startIntent.putExtra("org.materiallogindemo.EMAIL", _emailText.getText().toString());
                                     startActivity(startIntent);
                                 }
                             }

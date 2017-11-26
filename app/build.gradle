@@ -27,4 +27,6 @@ dependencies {
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     //implementation project(':mysql-connector-java-5.1.44-bin')
+    compile 'com.google.android.gms:play-services-maps:11.6.0'
+    compile 'com.github.delight-im:Android-SimpleLocation:v1.0.1'
 }

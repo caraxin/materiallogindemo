@@ -30,33 +30,33 @@
         android:layout_marginStart="8dp"
         android:text="Learn About Location"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/btnFindFriends"
+        app:layout_constraintBottom_toTopOf="@+id/btnAboutMe"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
-        android:id="@+id/btnFindFriends"
+        android:id="@+id/btnAboutMe"
         android:layout_width="215dp"
         android:layout_height="87dp"
         android:layout_marginBottom="32dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:scaleType="fitCenter"
-        app:layout_constraintBottom_toTopOf="@+id/textViewFindFriendsButton"
+        app:layout_constraintBottom_toTopOf="@+id/textViewAboutMeButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/friendsicon" />
 
     <TextView
-        android:id="@+id/textViewFindFriendsButton"
+        android:id="@+id/textViewAboutMeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="92dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:text="Find Friends"
+        android:text="About Me"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
