@@ -1,12 +1,11 @@
 package com.sourcey.materiallogindemo;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-
-import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,20 +15,15 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.util.ArrayList;
 
-import butterknife.ButterKnife;
 import butterknife.Bind;
+import butterknife.ButterKnife;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
-    private static final String login_url = "http://131.179.6.219:8006/BruinsInfo/Login";
+    private static final String login_url = "http://10.0.2.2:8080/BruinsInfo/Login";
 
 
     @Bind(R.id.input_email) EditText _emailText;
@@ -87,7 +81,8 @@ public class LoginActivity extends AppCompatActivity {
                     public void run() {
                         BackgroundTask backgroundTask = new BackgroundTask(getApplicationContext(), new ProcessResult() {
                             @Override
-                            public void returnString(String result) {
+                            public void returnArrString(ArrayList<String> arrresult) {
+                                String result = arrresult.get(0);
                                 System.out.println(result);
                                 if (result == null || !result.equals("1")) {
                                     onLoginFailed();

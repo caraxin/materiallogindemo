@@ -9,10 +9,11 @@ import android.widget.ImageButton;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class MenuActivity extends AppCompatActivity {
-    private static final String getuser_url = "http://131.179.6.219:8006/BruinsInfo/GetUser";
+    private static final String getuser_url = "http://10.0.2.2:8080/BruinsInfo/GetUser";
     ImageButton btnLearnAboutLocation;
     ImageButton btnAboutMe;
     String email = null;
@@ -48,7 +49,8 @@ public class MenuActivity extends AppCompatActivity {
             public void onClick(View v) {
                 BackgroundTask backgroundTask = new BackgroundTask(getApplicationContext(), new ProcessResult() {
                     @Override
-                    public void returnString(String result) {
+                    public void returnArrString(ArrayList<String> arrresult) {
+                        String result = arrresult.get(0);
                         System.out.println("GetUser result: " + result);
                         Intent goToAboutMe = new Intent(getApplicationContext(), AboutMeActivity.class);
                         goToAboutMe.putExtra("org.materiallogindemo.INFO", result);

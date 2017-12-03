@@ -14,12 +14,14 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import butterknife.ButterKnife;
+import java.util.ArrayList;
+
 import butterknife.Bind;
+import butterknife.ButterKnife;
 
 public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "SignupActivity";
-    private static final String signup_url = "http://131.179.6.219:8006/BruinsInfo/Signup";
+    private static final String signup_url = "http://10.0.2.2:8080/BruinsInfo/Signup";
 
     @Bind(R.id.input_name) EditText _nameText;
     @Bind(R.id.input_address) EditText _addressText;
@@ -77,7 +79,8 @@ public class SignupActivity extends AppCompatActivity {
                 public void run() {
                     BackgroundTask backgroundTask = new BackgroundTask(getApplicationContext(), new ProcessResult() {
                         @Override
-                        public void returnString(String result) {
+                        public void returnArrString(ArrayList<String> arrresult) {
+                            String result = arrresult.get(0);
                             System.out.println(result);
                             if (result == null || result.equals("0")) {
                                 onSignupFailed();
@@ -128,7 +131,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     public void onSignupFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), "Signup failed", Toast.LENGTH_LONG).show();
 
         _signupButton.setEnabled(true);
         Intent startIntent = new Intent(getApplicationContext(), SignupActivity.class);

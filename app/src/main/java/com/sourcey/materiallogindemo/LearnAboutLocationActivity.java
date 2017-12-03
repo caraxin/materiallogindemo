@@ -1,11 +1,13 @@
 package com.sourcey.materiallogindemo;
 
 import android.Manifest;
-import android.content.pm.PackageManager;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -19,20 +21,26 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import im.delight.android.location.SimpleLocation;
 
 public class LearnAboutLocationActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private static final String geoinfo_url = "http://131.179.6.219:8006/BruinsInfo/GeoInfo";
+    private static final String geoinfo_url = "http://10.0.2.2:8080/BruinsInfo/GeoInfo";
 
     Button btnGetLoc;
     double user_latitude = 34.0686201;
     double user_longitude = -118.442857;
+
+    ArrayList<String> email_list = new ArrayList<>();
+    ArrayList<String> dialog_emails = new ArrayList<>();
 
     GoogleMap m_googleMap;
     Marker marker = null;
@@ -78,17 +86,109 @@ public class LearnAboutLocationActivity extends AppCompatActivity implements OnM
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        updateMap2();
+        dialog_emails = updateMap2();
+
+        //code for dialog box
+
+        if (!dialog_emails.isEmpty()) {
+            System.out.println("Inside here...");
+
+            ArrayList<Integer> selectedItems = new ArrayList<>();
+
+            int num_emails = dialog_emails.size();
+            final String[] emails = dialog_emails.toArray(new String[num_emails]);
+            final boolean[] checkedemails = new boolean[num_emails];
+            for (int i = 0; i < num_emails; i++) {
+                checkedemails[i] = false;
+            }
+
+            final ArrayList<String> receiveremails = new ArrayList<>();
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(LearnAboutLocationActivity.this);
+            builder.setMultiChoiceItems(emails, checkedemails, new DialogInterface.OnMultiChoiceClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                    checkedemails[which] = isChecked;
+                    receiveremails.add(emails[which]);
+                }
+            });
+
+            builder.setTitle("Notify users in range");
+            builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("message/rfc822");
+                    intent.putExtra(Intent.EXTRA_EMAIL, receiveremails.toArray(new String[receiveremails.size()]));
+                    intent.putExtra(Intent.EXTRA_SUBJECT, "From a fellow BruinInfo user");
+                    intent.putExtra(Intent.EXTRA_TEXT, "I'm in your area!");
+                    try {
+                        startActivity(Intent.createChooser(intent, "Send mail..."));
+                    } catch (android.content.ActivityNotFoundException ex) {
+                        Toast.makeText(getApplicationContext(), "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
 
         btnGetLoc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateMap2();
+
+                //code for dialog box
+
+                dialog_emails = updateMap2();
+                if (!dialog_emails.isEmpty()) {
+                    System.out.println("Inside here...");
+
+                    ArrayList<Integer> selectedItems = new ArrayList<>();
+
+                    int num_emails = dialog_emails.size();
+                    final String[] emails = dialog_emails.toArray(new String[num_emails]);
+                    final boolean[] checkedemails = new boolean[num_emails];
+                    for (int i = 0; i < num_emails; i++) {
+                        checkedemails[i] = false;
+                    }
+
+                    final ArrayList<String> receiveremails = new ArrayList<>();
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(LearnAboutLocationActivity.this);
+                    builder.setMultiChoiceItems(emails, checkedemails, new DialogInterface.OnMultiChoiceClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                            checkedemails[which] = isChecked;
+                            receiveremails.add(emails[which]);
+                        }
+                    });
+
+                    builder.setTitle("Notify users in range");
+                    builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(Intent.ACTION_SEND);
+                            intent.setType("message/rfc822");
+                            intent.putExtra(Intent.EXTRA_EMAIL, receiveremails.toArray(new String[receiveremails.size()]));
+                            intent.putExtra(Intent.EXTRA_SUBJECT, "From a fellow BruinInfo user");
+                            intent.putExtra(Intent.EXTRA_TEXT, "I'm in your area!");
+                            try {
+                                startActivity(Intent.createChooser(intent, "Send mail..."));
+                            } catch (android.content.ActivityNotFoundException ex) {
+                                Toast.makeText(getApplicationContext(), "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
             }
         });
     }
 
-    void updateMap2() {
+    ArrayList<String> updateMap2() {
         GPStracker g = new GPStracker(getApplicationContext());
         Location l = g.getLocation();
         if(l != null){
@@ -106,8 +206,9 @@ public class LearnAboutLocationActivity extends AppCompatActivity implements OnM
 
         BackgroundTask task = new BackgroundTask(getApplicationContext(), new ProcessResult() {
             @Override
-            public void returnString(String result) {
+            public void returnArrString(ArrayList<String> arrresult) {
                 try {
+                    String result = arrresult.get(0);
                     JSONObject obj = new JSONObject(result);
                     String landmark_name = obj.getString("name");
                     double latitude = obj.getDouble("latitude");
@@ -116,11 +217,25 @@ public class LearnAboutLocationActivity extends AppCompatActivity implements OnM
                     double distance = obj.getDouble("distance");
                     int user_count = obj.getInt("userCount");
 
+                    //code for getting e-mails
+                    String emailresult = arrresult.get(1);
+
+                    Gson gson = new Gson();
+                    Type type = new TypeToken<ArrayList<String>>(){}.getType();
+                    email_list = gson.fromJson(emailresult, type);
+
+                    for (int i = 0; i < email_list.size(); i++)
+                    {
+                        System.out.println("Current address is " + email_list.get(i));
+                    }
+
                     marker.setPosition(new LatLng(user_latitude, user_longitude));
                     marker.setTitle(landmark_name);
                     marker.setSnippet("useful url: " + landmark_url + "\n current users: " + user_count);
                     marker.showInfoWindow();
                     System.out.println("landmark = " + landmark_name + "distance = " + distance + " user count = " + user_count);
+
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -138,16 +253,26 @@ public class LearnAboutLocationActivity extends AppCompatActivity implements OnM
         }
         String param = jsonParam.toString();
         task.execute(geoinfo_url, param);
+
+        if(!email_list.isEmpty())
+            email_list.remove(email);
+
+        System.out.println("Returning email list");
+        return email_list;
     }
 
-    void updateMap() {
+    //updateMap is never called
+
+    ArrayList<String> updateMap() {
+        System.out.println("I've been called!!!");
         user_latitude = location.getLatitude();
         user_longitude = location.getLongitude();
         System.out.println("Learn about Location Activity!: " + user_latitude + ", " + user_longitude);
         BackgroundTask task = new BackgroundTask(getApplicationContext(), new ProcessResult() {
             @Override
-            public void returnString(String result) {
+            public void returnArrString(ArrayList<String> arrresult) {
                 try {
+                    String result = arrresult.get(0);
                     JSONObject obj = new JSONObject(result);
                     String landmark_name = obj.getString("name");
                     double latitude = obj.getDouble("latitude");
@@ -163,6 +288,18 @@ public class LearnAboutLocationActivity extends AppCompatActivity implements OnM
                     marker.setSnippet("useful url: " + landmark_url + "\n current users: " + user_count);
                     marker.showInfoWindow();
                     System.out.println("landmark = " + landmark_name + "distance = " + distance + " user count = " + user_count);
+
+                    String emailresult = arrresult.get(1);
+
+                    Gson gson = new Gson();
+                    Type type = new TypeToken<ArrayList<String>>(){}.getType();
+                    email_list = gson.fromJson(emailresult, type);
+
+                    for (int i = 0; i < email_list.size(); i++)
+                    {
+                        System.out.println("Current address is " + email_list.get(i));
+                    }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -178,6 +315,8 @@ public class LearnAboutLocationActivity extends AppCompatActivity implements OnM
         }
         String param = jsonParam.toString();
         task.execute(geoinfo_url, param);
+
+        return email_list;
     }
 
     /**
@@ -215,10 +354,30 @@ public class LearnAboutLocationActivity extends AppCompatActivity implements OnM
                 content.setText(marker.getSnippet());
 
                 return v;
-
             }
         });
         m_googleMap.moveCamera(CameraUpdateFactory.newLatLng(current_pos));
+
+        //click event responder for marker info window
+        m_googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+
+                String url = marker.getSnippet();
+                url = url.replace("useful url: ", "");
+                int startindex = url.indexOf('\n');
+                url = url.substring(0, startindex - 1);
+
+                System.out.println("URL is: " + url);
+
+                Uri webaddress = Uri.parse(url);
+
+                Intent gotoUrl = new Intent(Intent.ACTION_VIEW, webaddress);
+                if(gotoUrl.resolveActivity(getPackageManager()) != null)
+                    startActivity(gotoUrl);
+            }
+        });
+
     }
 
     /*
