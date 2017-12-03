@@ -19,7 +19,7 @@ import butterknife.Bind;
 
 public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "SignupActivity";
-    private static final String signup_url = "http://10.0.2.2:8006/BruinsInfo/Signup";
+    private static final String signup_url = "http://131.179.6.219:8006/BruinsInfo/Signup";
 
     @Bind(R.id.input_name) EditText _nameText;
     @Bind(R.id.input_address) EditText _addressText;

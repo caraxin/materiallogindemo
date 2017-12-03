@@ -25,31 +25,42 @@ public class GPStracker implements LocationListener {
     //constructor
     public GPStracker(Context c){
         context = c;
+        System.out.println("constructing GPSTracker");
     }
 
     //get location, if possible
     public Location getLocation(){
-
+        Toast.makeText(context, "entering gpsTracker", Toast.LENGTH_SHORT);
+        System.out.println("entering gpsTracker");
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-            Toast.makeText(context, "Permission not granted", Toast.LENGTH_SHORT);
+            System.out.println("**********0**********");
             return null;
         }
 
 
         LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        boolean isGPSEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        boolean isGPSEnabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
         if(isGPSEnabled){
-            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 6000, 1, this);
-            Location l = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 6000, 1, this);
+            Location l = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            if (l == null) {
+                Toast.makeText(context, "location is ", Toast.LENGTH_SHORT);
+                System.out.println("**********************location is null!*************************");
+            }
+            else {
+                System.out.println("location is not null");
+                Toast.makeText(context, "location: " + l.getLatitude() + " " + l.getLongitude(), Toast.LENGTH_SHORT);
+                System.out.println(l.getLatitude() + " " + l.getLongitude());
+            }
             System.out.println("detect the location!");
             return l;
         }else{
             System.out.println("Please enable GPS!");
             Toast.makeText(context, "Please enable GPS", Toast.LENGTH_LONG);
         }
-
         return null;
+
     }
 
     @Override

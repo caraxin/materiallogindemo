@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import java.util.UUID;
 
 public class MenuActivity extends AppCompatActivity {
-    private static final String getuser_url = "http://10.0.2.2:8006/BruinsInfo/GetUser";
+    private static final String getuser_url = "http://131.179.6.219:8006/BruinsInfo/GetUser";
     ImageButton btnLearnAboutLocation;
     ImageButton btnAboutMe;
     String email = null;

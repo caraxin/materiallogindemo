@@ -1,13 +1,16 @@
 package com.sourcey.materiallogindemo;
 
 import android.Manifest;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,7 +28,7 @@ import java.util.ArrayList;
 import im.delight.android.location.SimpleLocation;
 
 public class LearnAboutLocationActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private static final String geoinfo_url = "http://10.0.2.2:8006/BruinsInfo/GeoInfo";
+    private static final String geoinfo_url = "http://131.179.6.219:8006/BruinsInfo/GeoInfo";
 
     Button btnGetLoc;
     double user_latitude = 34.0686201;
@@ -37,6 +40,8 @@ public class LearnAboutLocationActivity extends AppCompatActivity implements OnM
     //private SimpleLocation location;
     String email;
 
+    SimpleLocation location = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,8 +49,14 @@ public class LearnAboutLocationActivity extends AppCompatActivity implements OnM
 
         email = getIntent().getExtras().getString("org.materiallogindemo.EMAIL");
         btnGetLoc = (Button) findViewById(R.id.btnGetLoc);
-        /*
+
         ActivityCompat.requestPermissions(LearnAboutLocationActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 123);
+        /*
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            Toast.makeText(getApplicationContext(), "Permission not granted", Toast.LENGTH_SHORT);
+            return;
+        }
+
         location = new SimpleLocation(this, true, false, 5 * 1000, true);
         // if we can't access the location yet
         if (!location.hasLocationEnabled()) {
@@ -128,10 +139,10 @@ public class LearnAboutLocationActivity extends AppCompatActivity implements OnM
         String param = jsonParam.toString();
         task.execute(geoinfo_url, param);
     }
-    /*
+
     void updateMap() {
-        // user_latitude = location.getLatitude();
-        // user_longitude = location.getLongitude();
+        user_latitude = location.getLatitude();
+        user_longitude = location.getLongitude();
         System.out.println("Learn about Location Activity!: " + user_latitude + ", " + user_longitude);
         BackgroundTask task = new BackgroundTask(getApplicationContext(), new ProcessResult() {
             @Override
@@ -168,7 +179,7 @@ public class LearnAboutLocationActivity extends AppCompatActivity implements OnM
         String param = jsonParam.toString();
         task.execute(geoinfo_url, param);
     }
-    */
+
     /**
      * Manipulates the map when it's available.
      * The API invokes this callback when the map is ready to be used.
