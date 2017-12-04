@@ -32,18 +32,18 @@ public class GPStracker implements LocationListener {
     public Location getLocation(){
         Toast.makeText(context, "entering gpsTracker", Toast.LENGTH_SHORT);
         System.out.println("entering gpsTracker");
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
             System.out.println("**********0**********");
             return null;
         }
 
 
         LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        boolean isGPSEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        boolean isGPSEnabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
         if(isGPSEnabled){
-            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 6000, 1, this);
-            Location l = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000, 3, this);
+            Location l = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             if (l == null) {
                 Toast.makeText(context, "location is ", Toast.LENGTH_SHORT);
                 System.out.println("**********************location is null!*************************");

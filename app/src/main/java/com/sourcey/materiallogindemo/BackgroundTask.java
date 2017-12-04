@@ -89,7 +89,7 @@ public class BackgroundTask extends AsyncTask<String,Void,ArrayList<String>> {
 
             //if option is for geoinfo, we read in additional e-mail list from servlet
 
-            if(params[0] == "http://10.0.2.2:8080/BruinsInfo/GeoInfo")
+            if(params[0] == "http://131.179.4.157:8080/BruinsInfo/GeoInfo")
                 emails = bufferedReader.readLine();
 
             IS.close();

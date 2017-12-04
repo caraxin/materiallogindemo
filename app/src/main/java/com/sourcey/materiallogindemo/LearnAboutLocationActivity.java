@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import im.delight.android.location.SimpleLocation;
 
 public class LearnAboutLocationActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private static final String geoinfo_url = "http://10.0.2.2:8080/BruinsInfo/GeoInfo";
+    private static final String geoinfo_url = "http://131.179.4.157:8080/BruinsInfo/GeoInfo";
 
     Button btnGetLoc;
     double user_latitude = 34.0686201;
@@ -58,7 +58,7 @@ public class LearnAboutLocationActivity extends AppCompatActivity implements OnM
         email = getIntent().getExtras().getString("org.materiallogindemo.EMAIL");
         btnGetLoc = (Button) findViewById(R.id.btnGetLoc);
 
-        ActivityCompat.requestPermissions(LearnAboutLocationActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 123);
+        ActivityCompat.requestPermissions(LearnAboutLocationActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 123);
         /*
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
             Toast.makeText(getApplicationContext(), "Permission not granted", Toast.LENGTH_SHORT);
@@ -366,7 +366,7 @@ public class LearnAboutLocationActivity extends AppCompatActivity implements OnM
                 String url = marker.getSnippet();
                 url = url.replace("useful url: ", "");
                 int startindex = url.indexOf('\n');
-                url = url.substring(0, startindex - 1);
+                url = url.substring(0, startindex);
 
                 System.out.println("URL is: " + url);
 
