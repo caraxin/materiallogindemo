@@ -33,9 +33,11 @@ import java.util.ArrayList;
 import im.delight.android.location.SimpleLocation;
 
 public class LearnAboutLocationActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private static final String geoinfo_url = "http://131.179.4.157:8080/BruinsInfo/GeoInfo";
+    private static final String geoinfo_url = "http://10.0.2.2:8080/BruinsInfo/GeoInfo";
 
     Button btnGetLoc;
+    //New GPStracker variable
+    GPStracker g;
     double user_latitude = 34.0686201;
     double user_longitude = -118.442857;
 
@@ -57,6 +59,9 @@ public class LearnAboutLocationActivity extends AppCompatActivity implements OnM
 
         email = getIntent().getExtras().getString("org.materiallogindemo.EMAIL");
         btnGetLoc = (Button) findViewById(R.id.btnGetLoc);
+
+        //Make GPS tracker once
+        g = new GPStracker(getApplicationContext());
 
         ActivityCompat.requestPermissions(LearnAboutLocationActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 123);
         /*
@@ -186,10 +191,10 @@ public class LearnAboutLocationActivity extends AppCompatActivity implements OnM
                 }
             }
         });
+
     }
 
     ArrayList<String> updateMap2() {
-        GPStracker g = new GPStracker(getApplicationContext());
         Location l = g.getLocation();
         if(l != null){
             user_latitude = l.getLatitude();

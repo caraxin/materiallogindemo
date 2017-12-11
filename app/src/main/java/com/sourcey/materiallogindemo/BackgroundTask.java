@@ -69,6 +69,8 @@ public class BackgroundTask extends AsyncTask<String,Void,ArrayList<String>> {
             URL url = new URL(params[0]);
             HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
             httpURLConnection.setRequestMethod("POST");
+            //set connection timeout, because I find it always hangs if you don't
+            httpURLConnection.setConnectTimeout(20000);
             httpURLConnection.setDoOutput(true);
             OutputStream OS = httpURLConnection.getOutputStream();
             BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS, "UTF-8"));
@@ -89,7 +91,7 @@ public class BackgroundTask extends AsyncTask<String,Void,ArrayList<String>> {
 
             //if option is for geoinfo, we read in additional e-mail list from servlet
 
-            if(params[0] == "http://131.179.4.157:8080/BruinsInfo/GeoInfo")
+            if(params[0] == "http://10.0.2.2:8080/BruinsInfo/GeoInfo")
                 emails = bufferedReader.readLine();
 
             IS.close();
@@ -99,6 +101,10 @@ public class BackgroundTask extends AsyncTask<String,Void,ArrayList<String>> {
             arrresult.add(result);
             arrresult.add(emails);
 
+            if(arrresult.isEmpty())
+            {
+                System.out.println("Empty!!!");
+            }
             return arrresult;
             //return result;
 
